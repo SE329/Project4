@@ -19,8 +19,12 @@ public class SNBGemSquare extends JLabel{
 	public SNBGemSquare( int colorCode, int id ){
 		
 		this.id = id;
-		this.colorCode = colorCode;
+		setColorCode(colorCode);
+	}
+	
+	public void setColorCode(int colorCode){
 		
+		this.colorCode = colorCode;
 		Color c;
 		
 		switch(colorCode){
