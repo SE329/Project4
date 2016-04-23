@@ -54,6 +54,7 @@ public class SNBGemSquare extends JLabel{
 			break;
 		default:
 			c = Color.BLACK;
+			this.colorCode = -1;
 			break;
 		}
 		
