@@ -45,8 +45,39 @@ public class SNBGameBoard extends JPanel {
 				this.add(board[i][j]);
 			}
 		}
-		
+
 		this.addMouseListener(new BoardMouseListener());
+	}
+
+	public boolean hasLineAroundPoint(int x, int y) {
+
+		if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+			return false;
+		}
+
+		if (x - 2 >= 0 && board[y][x - 2].getColorCode() == board[y][x - 1].getColorCode()
+					&& board[y][x - 2].getColorCode() == board[y][x].getColorCode()) {
+				return true;
+		} else if (x - 1 >= 0 && x + 1 < this.width && board[y][x - 1].getColorCode() == board[y][x].getColorCode()
+					&& board[y][x-1].getColorCode() == board[y][x+1].getColorCode()) {
+				return true;
+		} else if (x + 2 < this.width && board[y][x].getColorCode() == board[y][x+2].getColorCode()
+					&& board[y][x].getColorCode() == board[y][x+1].getColorCode()) {
+				return true;
+		}
+
+		if (y - 2 >= 0 && board[y][x].getColorCode() == board[y-1][x].getColorCode()
+					&& board[y][x].getColorCode() == board[y-2][x].getColorCode()) {
+				return true;
+		} else if (y - 1 >= 0 && y + 1 < this.height && board[y-1][x].getColorCode() == board[y][x].getColorCode()
+					&& board[y+1][x].getColorCode() == board[y][x].getColorCode()) {
+				return true;
+		} else if (y + 2 < this.height && board[y][x].getColorCode() == board[y+1][x].getColorCode()
+					&& board[y][x].getColorCode() == board[y+2][x].getColorCode()) {
+				return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -94,133 +125,202 @@ public class SNBGameBoard extends JPanel {
 
 		return false;
 	}
-	
-	public int removeAdjacent3sAndGetScore(){
-		
+
+	public int removeLinesAndGetScore() {
+
+		removeLinesAndGetScoreHorizontal( getColorCodeArray() );
 		
 		return 0;
 	}
+	
+	private static final int removeLinesAndGetScoreHorizontal( int[][] arr ){
+		
+		int width = arr[0].length;
+		int height = arr.length;
+		int score = 0;
+		
+		for( int i = 0; i < height; i++ ){
+			
+			int index = 0;
+			int j = 1;
+			while( index < width && index + j < width ){
+			
+				if( arr[i][index] == arr[i][index+j]){
+					j++;
+				}
+				else{
+					score += getScoreForLineOfLengthN(arr[i][index], j);
+					int k = 0;
+					while( k < j ){
+						arr[i][index+k] = -1;
+					}
+					index = index + j;
+					j = 1;
+				}
+			}
+		}
+		
+		for( int i = 0; i < height; i++ ){
+			for( int j = 0; j < width; j++ ){
+				System.out.print(arr[i][j] + " ");
+				if( j == width - 1 ){
+					System.out.println();
+				}
+			}
+		}
+		System.out.println("Score:  "+ score);
+		System.out.println();
+		System.out.println("------------------------");
+		System.out.println();
+		return score;
+	}
+	
+	private static final int getScoreForLineOfLengthN( int colorCode, int n ){
+		return n;
+	}
+	
+	private int[][] getColorCodeArray(){
+		
+		int arr[][] = new int[this.height][this.width];
+		
+		for( int i = 0; i < this.height; i++ ){
+			for( int j = 0; j < this.width; j++ ){
+				arr[i][j] = board[i][j].getColorCode();
+			}
+		}
+		
+		return arr;
+	}
 
-	private class BoardMouseListener implements MouseListener{
+	private class BoardMouseListener implements MouseListener {
 
 		private boolean isDrag;
 		private int startX;
 		private int startY;
-		
-		public BoardMouseListener(){
+
+		public BoardMouseListener() {
 			this.isDrag = false;
 		}
-		
+
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
-			
-			
+
 		}
+
 		@Override
 		public void mouseEntered(MouseEvent arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
+
 		@Override
 		public void mouseExited(MouseEvent arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
+
 		@Override
 		public void mousePressed(MouseEvent arg0) {
-			
-			if( !isDrag ){
+
+			if (!isDrag) {
 				this.startX = arg0.getX();
 				this.startY = arg0.getY();
-				System.out.println("Start:  " + startX + ", " + startY);
+				//System.out.println("Start:  " + startX + ", " + startY);
 				isDrag = true;
 			}
 		}
+
 		@Override
 		public void mouseReleased(MouseEvent arg0) {
-			
-			if( isDrag ){
-			
+
+			if (isDrag) {
+
 				int endX = arg0.getX();
 				int endY = arg0.getY();
-				
-				System.out.println("End:  " + endX + ", " + endY);
-				
+
+				//System.out.println("End:  " + endX + ", " + endY);
+
 				int gemWidth = board[0][0].getWidth();
 				int gemHeight = board[0][0].getHeight();
-				
-				System.out.println("Gem Dimensions:  " + gemWidth + ", " + gemHeight);
-				
-				//int startIndX = (int) Math.floor(this.startX / gemWidth);
-				//int startIndY = (int) Math.floor(this.startY / gemHeight);
-				
+
+				//System.out.println("Gem Dimensions:  " + gemWidth + ", " + gemHeight);
+
+				// int startIndX = (int) Math.floor(this.startX / gemWidth);
+				// int startIndY = (int) Math.floor(this.startY / gemHeight);
+
 				int startIndX = getBoardArrayIndex(startX, true);
 				int startIndY = getBoardArrayIndex(startY, false);
-				
-				System.out.println("Start Index:  " + startIndX + ", " + startIndY);
-				
-				//int endIndX = (int) Math.floor(endX / gemWidth);
-				//int endIndY = (int) Math.floor(endY / gemHeight);
-				
+
+				//System.out.println("Start Index:  " + startIndX + ", " + startIndY);
+
+				// int endIndX = (int) Math.floor(endX / gemWidth);
+				// int endIndY = (int) Math.floor(endY / gemHeight);
+
 				int endIndX = getBoardArrayIndex(endX, true);
 				int endIndY = getBoardArrayIndex(endY, false);
-				
-				System.out.println("End Index:  " + endIndX + ", " + endIndY);
-				
-				if( startIndX < 0 || startIndY < 0 || endIndX < 0 || endIndY < 0 ){
+
+				//System.out.println("End Index:  " + endIndX + ", " + endIndY);
+
+				if (startIndX < 0 || startIndY < 0 || endIndX < 0 || endIndY < 0) {
 					isDrag = false;
-					System.out.println("Index out of bounds, Do Nothing");
+					//System.out.println("Index out of bounds, Do Nothing");
 					return;
 				}
-				
-				if( (Math.abs( endIndX - startIndX ) + Math.abs( endIndY - startIndY )) != 1 ){
+
+				if ((Math.abs(endIndX - startIndX) + Math.abs(endIndY - startIndY)) != 1) {
 					isDrag = false;
-					System.out.println("Non-Adjacent Selections");
+					//System.out.println("Non-Adjacent Selections");
 					return;
 				}
-				
+
 				int startCode = board[startIndY][startIndX].getColorCode();
 				int endCode = board[endIndY][endIndX].getColorCode();
-				
+
 				board[startIndY][startIndX].setColorCode(endCode);
 				board[endIndY][endIndX].setColorCode(startCode);
 				
+				if( !hasLineAroundPoint( endIndX, endIndY ) && !hasLineAroundPoint( startIndX, startIndY )){
+					board[startIndY][startIndX].setColorCode(startCode);
+					board[endIndY][endIndX].setColorCode(endCode);
+				}
+
 				isDrag = false;
+				
+				//removeLinesAndGetScore();
 			}
 		}
-		
-		private int getBoardArrayIndex(int pixel, boolean isX){
-			
-			if( isX ){
-				
-				for( int i = 0, total = 0; i < width; i++ ){
-					
+
+		private int getBoardArrayIndex(int pixel, boolean isX) {
+
+			if (isX) {
+
+				for (int i = 0, total = 0; i < width; i++) {
+
 					int next = total + board[0][i].getWidth();
-					
-					if( pixel >= total && pixel < next ){
+
+					if (pixel >= total && pixel < next) {
 						return i;
 					}
-					
+
 					total = next;
 				}
-			}
-			else{
-				
-				for( int i = 0, total = 0; i < height; i++ ){
-					
+			} else {
+
+				for (int i = 0, total = 0; i < height; i++) {
+
 					int next = total + board[i][0].getHeight();
-					
-					if( pixel >= total && pixel < next ){
+
+					if (pixel >= total && pixel < next) {
 						return i;
 					}
-					
+
 					total = next;
 				}
 			}
-			
+
 			return -1;
-			
+
 		}
-		
+
 	}
 }
