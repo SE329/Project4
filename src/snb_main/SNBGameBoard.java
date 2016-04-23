@@ -168,6 +168,7 @@ public class SNBGameBoard extends JPanel
 			}
 		}
 
+		// iterate over grid and randomly fill "empty" squares
 		for (int row = 0; row < board.length; ++row)
 		{
 			for (int col = 0; col < board[0].length; ++col)
@@ -180,6 +181,36 @@ public class SNBGameBoard extends JPanel
 			}
 		}
 
+	}
+
+	/**
+	 * Iterates over grid and checks if there is a matching line of gems If so, clears those lines.
+	 */
+	public void checkGridForMatches()
+	{
+		/*
+		 * If the method finds a match at any point, things collapsed and there could be another
+		 * match in the grid. This method repeats itself until no matches are found in the grid.
+		 */
+		boolean matches = true;
+		while (matches)
+		{
+			matches = false;
+			for (int row = 0; row < board.length; ++row)
+			{
+				for (int col = 0; col < board[0].length; ++col)
+				{
+					if (board[row][col].getColorCode() != -1)
+					{
+						if (hasLineAroundPoint(col, row))
+						{
+							matches = true;
+							score += removeLinesAndGetScoreAroundPoint(col, row);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private int removeLinesAndGetScoreAroundPoint(int x, int y)
@@ -507,8 +538,9 @@ public class SNBGameBoard extends JPanel
 
 				isDrag = false;
 
-				removeLinesAndGetScoreAroundPoint(startIndX, startIndY);
-				removeLinesAndGetScoreAroundPoint(endIndX, endIndY);
+				checkGridForMatches();
+				// removeLinesAndGetScoreAroundPoint(startIndX, startIndY);
+				// removeLinesAndGetScoreAroundPoint(endIndX, endIndY);
 				// removeLinesAndGetScore();
 			}
 		}
