@@ -493,7 +493,7 @@ public class SNBGameBoard extends JPanel
 
 	private static final int getScoreForLineOfLengthN(int colorCode, int n)
 	{
-		return n;
+		return (n * 10);
 	}
 
 	private void printColorCodeArray()
