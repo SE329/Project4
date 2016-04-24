@@ -21,10 +21,12 @@ public class SNBGameBoard extends JPanel
 	private int					height;
 	private Random				rand;
 	private int					score;
+	public boolean				isOver;
 
 	public SNBGameBoard()
 	{
 
+		isOver = false;
 		this.numGemTypes = DEFAULT_NUM_GEMS;
 		this.width = this.height = DEFAULT_BOARD_SIZE;
 		this.rand = new Random();
@@ -223,6 +225,91 @@ public class SNBGameBoard extends JPanel
 		}
 
 		return false;
+	}
+
+	/**
+	 * Iterates over the board to check for any possible matches
+	 * 
+	 * @return true if game is still playable, false otherwise.
+	 */
+	public boolean hasPossibleMatch()
+	{
+
+		for (int row = 0; row < board.length; ++row)
+		{
+			for (int col = 0; col < board[row].length; ++col)
+			{
+				if (canSwap(row, col))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Attempts to swap the cell in every direction
+	 * 
+	 * @param row
+	 * row of the cell to be swapped
+	 * @param col
+	 * col of the cell to be swapped
+	 * @return true if swapping results in a match, false otherwise.
+	 */
+	private boolean canSwap(int row, int col)
+	{
+		boolean ret = false;
+		// check up
+		if (row > 0)
+		{
+			swap(row, col, row - 1, col);
+			// matched in one of two places, no need to check full grid.
+			if (hasLineAroundPoint(col, row) || hasLineAroundPoint(col, row - 1))
+			{
+				ret = true;
+			}
+			// swap back to not ruin game state.
+			swap(row, col, row - 1, col);
+		}
+		// check right
+		if (col < board[row].length - 1)
+		{
+			swap(row, col, row, col + 1);
+			if (hasLineAroundPoint(col, row) || hasLineAroundPoint(col + 1, row))
+			{
+				ret = true;
+			}
+			swap(row, col, row, col + 1);
+		}
+		// check down
+		if (row < board.length - 1)
+		{
+			swap(row, col, row + 1, col);
+			if (hasLineAroundPoint(col, row) || hasLineAroundPoint(col, row + 1))
+			{
+				ret = true;
+			}
+			swap(row, col, row + 1, col);
+		}
+		// check left
+		if (col > 0)
+		{
+			swap(row, col, row, col - 1);
+			if (hasLineAroundPoint(col, row) || hasLineAroundPoint(col - 1, row))
+			{
+				ret = true;
+			}
+			swap(row, col, row, col - 1);
+		}
+
+		return ret;
+	}
+
+	private void swap(int fromRow, int fromCol, int toRow, int toCol)
+	{
+		SNBGemSquare temp = board[fromRow][fromCol];
+		board[fromRow][fromCol] = board[toRow][toCol];
+		board[toRow][toCol] = temp;
 	}
 
 	private int removeLinesAndGetScoreAroundPoint(int x, int y)
@@ -462,14 +549,12 @@ public class SNBGameBoard extends JPanel
 		@Override
 		public void mouseEntered(MouseEvent arg0)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void mouseExited(MouseEvent arg0)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
@@ -489,6 +574,8 @@ public class SNBGameBoard extends JPanel
 		@Override
 		public void mouseReleased(MouseEvent arg0)
 		{
+			if (isOver)
+				return;
 
 			if (isDrag)
 			{
@@ -553,6 +640,11 @@ public class SNBGameBoard extends JPanel
 				while (hasMatch())
 				{
 					clearMatches();
+				}
+				if (!hasPossibleMatch())
+				{
+					isOver = true;
+					// TODO make the game over screen happen?
 				}
 			}
 		}
