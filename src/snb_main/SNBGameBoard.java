@@ -23,7 +23,7 @@ public class SNBGameBoard extends JPanel
 	private Random				rand;
 	private int					score;
 	public boolean				isOver;
-	private SNBPanel scorePanel;
+	private SNBPanel			scorePanel;
 
 	public SNBGameBoard()
 	{
@@ -56,15 +56,16 @@ public class SNBGameBoard extends JPanel
 		}
 
 		this.addMouseListener(new BoardMouseListener());
-		this.setPreferredSize( new Dimension(600, 600));
+		this.setPreferredSize(new Dimension(600, 600));
 
 		// printColorCodeArray();
 	}
 
-	public void setScorePanel(SNBPanel p){
+	public void setScorePanel(SNBPanel p)
+	{
 		this.scorePanel = p;
 	}
-	
+
 	public boolean hasLineAroundPoint(int x, int y)
 	{
 
@@ -325,20 +326,32 @@ public class SNBGameBoard extends JPanel
 		if (x < 0 || y < 0 || x >= width || y >= height)
 			return 0;
 
-		int score = removeLinesAndGetScoreAroundPointHorizontal(x, y);
-		score += removeLinesAndGetScoreAroundPointVertical(x, y);
+		int score = getScoreAroundPointHorizontal(x, y);
+		score += getScoreAroundPointVertical(x, y);
 
-		if (score > 0)
-		{
-			board[y][x].setColorCode(-1);
-		}
-
+		removeMatched();
 		collapseAndFill();
 
 		return score;
 	}
 
-	private int removeLinesAndGetScoreAroundPointHorizontal(int x, int y)
+	private void removeMatched()
+	{
+		for (int row = 0; row < board.length; ++row)
+		{
+			for (int col = 0; col < board[0].length; ++col)
+			{
+				if (board[row][col].getClearFlag())
+				{
+					board[row][col].setClearFlag(false);
+					board[row][col].setColorCode(-1);
+				}
+			}
+		}
+
+	}
+
+	private int getScoreAroundPointHorizontal(int x, int y)
 	{
 
 		int score = 0;
@@ -386,7 +399,7 @@ public class SNBGameBoard extends JPanel
 
 				if (ind != x)
 				{
-					board[y][ind].setColorCode(-1);
+					board[y][ind].setClearFlag(true);
 				}
 			}
 
@@ -395,7 +408,7 @@ public class SNBGameBoard extends JPanel
 		return score;
 	}
 
-	private int removeLinesAndGetScoreAroundPointVertical(int x, int y)
+	private int getScoreAroundPointVertical(int x, int y)
 	{
 
 		int score = 0;
@@ -442,7 +455,7 @@ public class SNBGameBoard extends JPanel
 			{
 				if (ind != y)
 				{
-					board[ind][x].setColorCode(-1);
+					board[ind][x].setClearFlag(true);
 				}
 			}
 
@@ -451,88 +464,9 @@ public class SNBGameBoard extends JPanel
 		return score;
 	}
 
-	private static final int removeLinesAndGetScoreHorizontal(int[][] arr)
-	{
-
-		int width = arr[0].length;
-		int height = arr.length;
-		int score = 0;
-
-		for (int i = 0; i < height; i++)
-		{
-
-			int index = 0;
-			int j = 1;
-			while (index < width && index + j < width)
-			{
-
-				if (arr[i][index] == arr[i][index + j])
-				{
-					j++;
-				}
-				else
-				{
-					score += getScoreForLineOfLengthN(arr[i][index], j);
-					int k = 0;
-					while (k < j)
-					{
-						arr[i][index + k] = -1;
-					}
-					index = index + j;
-					j = 1;
-				}
-			}
-		}
-
-		for (int i = 0; i < height; i++)
-		{
-			for (int j = 0; j < width; j++)
-			{
-				System.out.print(arr[i][j] + " ");
-				if (j == width - 1)
-				{
-					System.out.println();
-				}
-			}
-		}
-		return score;
-	}
-
 	private static final int getScoreForLineOfLengthN(int colorCode, int n)
 	{
 		return (n * 10);
-	}
-
-	private void printColorCodeArray()
-	{
-
-		for (int i = 0; i < this.height; i++)
-		{
-			for (int j = 0; j < this.width; j++)
-			{
-				System.out.print(board[i][j].getColorCode() + " ");
-				if (j == this.width - 1)
-				{
-					System.out.println();
-				}
-			}
-		}
-	}
-
-	private int[][] getColorCodeArray()
-	{
-
-		int arr[][] = new int[this.height][this.width];
-
-		for (int i = 0; i < this.height; i++)
-		{
-			for (int j = 0; j < this.width; j++)
-			{
-				arr[i][j] = board[i][j].getColorCode();
-			}
-		}
-
-		return arr;
 	}
 
 	private class BoardMouseListener implements MouseListener
@@ -653,8 +587,9 @@ public class SNBGameBoard extends JPanel
 					isOver = true;
 					// TODO make the game over screen happen?
 				}
-				
-				if( scorePanel != null ){
+
+				if (scorePanel != null)
+				{
 					scorePanel.updateScore();
 				}
 			}
