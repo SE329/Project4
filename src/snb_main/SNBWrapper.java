@@ -1,17 +1,20 @@
 package snb_main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class SNBWrapper {
 
 	private JFrame gameFrame;
-	private JPanel gamePanel;
+	private JLabel gamePanel;
 	private SNBGameBoard board;
 	private SNBPanel top;
 	private JPanel bottom;
@@ -33,10 +36,15 @@ public class SNBWrapper {
 	
 	private void setupGamePanel(){
 		
-		gamePanel = new JPanel();
+		gamePanel = new JLabel();
+		
+		ImageIcon icon = new ImageIcon("img/bg1.png");
+		gamePanel.setIcon(icon);
 		
 		gamePanel.setSize(700, 700);
 		gamePanel.setLayout( new BorderLayout() );
+		
+		gamePanel.setBackground(Color.MAGENTA);
 		
 		board = new SNBGameBoard();
 		
@@ -46,6 +54,10 @@ public class SNBWrapper {
 		bottom = new JPanel();
 		left = new JPanel();
 		right = new JPanel();
+		
+		bottom.setOpaque(false);
+		left.setOpaque(false);
+		right.setOpaque(false);
 		
 		bottom.setPreferredSize( new Dimension(700, 50));
 		left.setPreferredSize( new Dimension(50, 600));
@@ -68,7 +80,10 @@ public class SNBWrapper {
 			board.setScorePanel(top);
 			top.setBoard(board);
 			gamePanel.add(board, BorderLayout.CENTER);
-			gamePanel.repaint();
+			
+			gameFrame.getContentPane().validate();
+			gameFrame.getContentPane().repaint();
+			//gamePanel.repaint();
 			System.out.println("New Game");
 		}
 	}

@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 public class SNBGameBoard extends JPanel
 {
 
-	private static final int	DEFAULT_BOARD_SIZE	= 10;
-	private static final int	DEFAULT_NUM_GEMS	= 8;
+	private static final int	DEFAULT_BOARD_SIZE	= 9;
+	private static final int	DEFAULT_NUM_GEMS	= 7;
 
 	private SNBGemSquare[][]	board;
 
