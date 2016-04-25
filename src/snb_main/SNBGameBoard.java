@@ -2,6 +2,7 @@
 package snb_main;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -55,6 +56,7 @@ public class SNBGameBoard extends JPanel
 		}
 
 		this.addMouseListener(new BoardMouseListener());
+		this.setPreferredSize( new Dimension(600, 600));
 
 		// printColorCodeArray();
 	}

@@ -1,6 +1,8 @@
 package snb_main;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,9 +27,15 @@ public class SNBPanel extends JPanel{
 		score.setPreferredSize(new Dimension(100, 40));
 		score.setOpaque(true);
 		this.add(score);
+		
+		this.setPreferredSize( new Dimension(700, 50));
 	}
 	
 	public void updateScore(){
 		score.setText("Score:  " + board.getScore());
+	}
+	
+	public void setNewGameListener( ActionListener l ){
+		newGame.addActionListener(l);
 	}
 }
