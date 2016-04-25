@@ -22,6 +22,7 @@ public class SNBGameBoard extends JPanel
 	private Random				rand;
 	private int					score;
 	public boolean				isOver;
+	private SNBPanel scorePanel;
 
 	public SNBGameBoard()
 	{
@@ -58,6 +59,10 @@ public class SNBGameBoard extends JPanel
 		// printColorCodeArray();
 	}
 
+	public void setScorePanel(SNBPanel p){
+		this.scorePanel = p;
+	}
+	
 	public boolean hasLineAroundPoint(int x, int y)
 	{
 
@@ -383,7 +388,7 @@ public class SNBGameBoard extends JPanel
 				}
 			}
 
-			score += getScoreForLineOfLengthN(colorCode, i + j);
+			score += getScoreForLineOfLengthN(colorCode, i + j + 1);
 		}
 		return score;
 	}
@@ -439,7 +444,7 @@ public class SNBGameBoard extends JPanel
 				}
 			}
 
-			score += getScoreForLineOfLengthN(colorCode, i + j);
+			score += getScoreForLineOfLengthN(colorCode, i + j + 1);
 		}
 		return score;
 	}
@@ -645,6 +650,10 @@ public class SNBGameBoard extends JPanel
 				{
 					isOver = true;
 					// TODO make the game over screen happen?
+				}
+				
+				if( scorePanel != null ){
+					scorePanel.updateScore();
 				}
 			}
 		}
