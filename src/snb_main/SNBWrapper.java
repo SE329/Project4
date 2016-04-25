@@ -68,7 +68,10 @@ public class SNBWrapper {
 			board.setScorePanel(top);
 			top.setBoard(board);
 			gamePanel.add(board, BorderLayout.CENTER);
-			gamePanel.repaint();
+			
+			gameFrame.getContentPane().validate();
+			gameFrame.getContentPane().repaint();
+			//gamePanel.repaint();
 			System.out.println("New Game");
 		}
 	}
