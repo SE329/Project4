@@ -329,6 +329,11 @@ public class SNBGameBoard extends JPanel
 		int score = getScoreAroundPointHorizontal(x, y);
 		score += getScoreAroundPointVertical(x, y);
 
+		if (score > 0)
+		{
+			board[y][x].setClearFlag(true);
+		}
+
 		removeMatched();
 		collapseAndFill();
 
